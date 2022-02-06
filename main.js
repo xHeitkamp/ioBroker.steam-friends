@@ -176,7 +176,7 @@ class SteamFriends extends utils.Adapter {
 		this.setObjectNotExistsAsync(channelname, {
 			type: 'channel',
 			common: {
-				name: channelname
+				name: friend['personaname']
 			},
 			native: {}
 		});

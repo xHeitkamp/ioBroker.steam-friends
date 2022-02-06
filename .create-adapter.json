@@ -1,0 +1,46 @@
+{
+	"cli": true,
+	"adapterName": "steam-friends",
+	"title": "Steam Friends",
+	"description": "With this adapter you can check if your friends in Steam are online, offline or currently playing a game",
+	"keywords": [
+		"iobroker",
+		"smarthome",
+		"steam",
+		"friends"
+	],
+	"contributors": [
+		"Robin Behlke"
+	],
+	"expert": "yes",
+	"features": [
+		"adapter"
+	],
+	"adminFeatures": [],
+	"type": "misc-data",
+	"startMode": "daemon",
+	"connectionType": "cloud",
+	"dataSource": "poll",
+	"connectionIndicator": "yes",
+	"language": "JavaScript",
+	"adminReact": "no",
+	"tools": [
+		"ESLint",
+		"type checking"
+	],
+	"releaseScript": "yes",
+	"devServer": "yes",
+	"devServerPort": 8081,
+	"indentation": "Tab",
+	"quotes": "single",
+	"es6class": "yes",
+	"authorName": "xHeitkamp",
+	"authorGithub": "xHeitkamp",
+	"authorEmail": "robin@behlke.tech",
+	"gitRemoteProtocol": "HTTPS",
+	"gitCommit": "yes",
+	"license": "MIT License",
+	"ci": "gh-actions",
+	"dependabot": "yes",
+	"creatorVersion": "1.34.1"
+}

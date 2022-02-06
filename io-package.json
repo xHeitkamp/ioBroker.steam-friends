@@ -1,0 +1,100 @@
+{
+	"common": {
+		"name": "steam-friends",
+		"version": "0.0.1",
+		"news": {
+			"0.0.1": {
+				"en": "initial release",
+				"de": "Erstveröffentlichung",
+				"ru": "Начальная версия",
+				"pt": "lançamento inicial",
+				"nl": "Eerste uitgave",
+				"fr": "Première version",
+				"it": "Versione iniziale",
+				"es": "Versión inicial",
+				"pl": "Pierwsze wydanie",
+				"zh-cn": "首次出版"
+			}
+		},
+		"titleLang": {
+			"en": "Steam Friends",
+			"de": "Steam-Freunde",
+			"ru": "Паровые друзья",
+			"pt": "Amigos do Steam",
+			"nl": "Steam-vrienden",
+			"fr": "Amis de la vapeur",
+			"it": "Amici di Steam",
+			"es": "Amigos de vapor",
+			"pl": "Przyjaciele Steam",
+			"zh-cn": "Steam 好友"
+		},
+		"desc": {
+			"en": "With this adapter you can check if your friends in Steam are online, offline or currently playing a game",
+			"de": "Mit diesem Adapter können Sie überprüfen, ob Ihre Freunde in Steam online oder offline sind oder gerade ein Spiel spielen",
+			"ru": "С помощью этого адаптера вы можете проверить, находятся ли ваши друзья в Steam в сети, в автономном режиме или в настоящее время играют в игру.",
+			"pt": "Com este adaptador você pode verificar se seus amigos no Steam estão online, offline ou jogando atualmente",
+			"nl": "Met deze adapter kun je controleren of je vrienden in Steam online, offline zijn of momenteel een game aan het spelen zijn",
+			"fr": "Avec cet adaptateur, vous pouvez vérifier si vos amis dans Steam sont en ligne, hors ligne ou en train de jouer à un jeu",
+			"it": "Con questo adattatore puoi controllare se i tuoi amici su Steam sono online, offline o stanno giocando",
+			"es": "Con este adaptador, puede verificar si sus amigos en Steam están en línea, fuera de línea o jugando un juego actualmente",
+			"pl": "Za pomocą tego adaptera możesz sprawdzić, czy Twoi znajomi na Steam są online, offline lub aktualnie grają w grę",
+			"zh-cn": "使用此适配器，您可以检查 Steam 中的好友是否在线、离线或正在玩游戏"
+		},
+		"authors": [
+			"xHeitkamp <robin@behlke.tech>"
+		],
+		"keywords": [
+			"iobroker",
+			"smarthome",
+			"steam",
+			"friends"
+		],
+		"license": "MIT",
+		"platform": "Javascript/Node.js",
+		"main": "main.js",
+		"icon": "steam-friends.png",
+		"enabled": true,
+		"extIcon": "https://raw.githubusercontent.com/xHeitkamp/ioBroker.steam-friends/master/admin/steam-friends.png",
+		"readme": "https://github.com/xHeitkamp/ioBroker.steam-friends/blob/master/README.md",
+		"loglevel": "info",
+		"mode": "daemon",
+		"type": "misc-data",
+		"compact": true,
+		"connectionType": "cloud",
+		"dataSource": "poll",
+		"materialize": true,
+		"dependencies": [
+			{
+				"js-controller": ">=2.0.0"
+			}
+		]
+	},
+	"native": {
+		"option1": true,
+		"option2": "42"
+	},
+	"objects": [],
+	"instanceObjects": [
+		{
+			"_id": "info",
+			"type": "channel",
+			"common": {
+				"name": "Information"
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.connection",
+			"type": "state",
+			"common": {
+				"role": "indicator.connected",
+				"name": "Device or service connected",
+				"type": "boolean",
+				"read": true,
+				"write": false,
+				"def": false
+			},
+			"native": {}
+		}
+	]
+}

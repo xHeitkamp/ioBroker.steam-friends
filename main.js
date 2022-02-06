@@ -9,7 +9,8 @@
 const utils = require('@iobroker/adapter-core');
 
 // Load your modules here, e.g.:
-// const fs = require("fs");
+const axios = require('axios');
+const helper = require('./lib/helper');
 
 //Global variables
 let refreshInterval;
@@ -32,22 +33,64 @@ class SteamFriends extends utils.Adapter {
 	 * Is called when databases are connected and adapter received configuration.
 	 */
 	async onReady() {
-		// Initialize your adapter here
 
 		// Reset the connection indicator during startup
 		this.setState('info.connection', false, true);
 
-		// The adapters config (in the instance object everything under the attribute "native") is accessible via
-		// this.config:
-
+		// Set vars from admin page
 		// @ts-ignore
-		const interval = parseInt(this.config.refreshinterval);
-		refreshInterval = this.setInterval(
-			this.main,
-			interval * 1000
-		);
+		const refreshIntervalInS = parseInt(this.config.refreshinterval) * 1000;
+		const connection = {
+			steamid: this.config.steamid,
+			apikey: this.config.apikey
+		};
 
-		this.setState('info.connection', true, true);
+		refreshInterval = setInterval(async () => {
+			// Check if API-Key is correct
+			const url = `http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=${connection.apikey}&steamid=${connection.steamid}&relationship=friend`;
+			try {
+				// @ts-ignore
+				// eslint-disable-next-line no-unused-vars
+				const response = await axios.get(url);
+				this.setStateAsync('info.connection', true, true);
+			} catch (error) {
+				this.log.error(
+					'Access is denied. Retrying will not help. Please verify your API-Key.'
+				);
+				this.setStateAsync('info.connection', false, true);
+				clearInterval(refreshInterval);
+				refreshInterval = null;
+				return;
+			}
+
+			// Get steam friendlist
+			const friendList = await this.getFriends(connection);
+			// Throw error if no friends are found
+			if (friendList.length === 0) {
+				this.log.error(
+					'No friends found. Please verify your Steam-ID and check if your friends list is public.'
+				);
+				this.setStateAsync('info.connection', false, true);
+				clearInterval(refreshInterval);
+				refreshInterval = null;
+				return;
+			}
+			const friendListChunks = helper.splitArrayIntoChunks(friendList, 100);
+
+			// Get more details of each friend
+			const friends = [];
+			for (let index = 0; index < friendListChunks.length; index++) {
+				const details = await this.getFriendDetails(connection, friendListChunks[index]);
+				friends.push(...details);
+			}
+
+			// Set the data in ioBroker
+			for (let index = 0; index < friends.length; index++) {
+				this.setData(connection.steamid, friends[index]);
+			}
+
+		}, refreshIntervalInS);
+
 	}
 
 	/**
@@ -56,7 +99,8 @@ class SteamFriends extends utils.Adapter {
 	 */
 	onUnload(callback) {
 		try {
-			clearInterval(refreshInterval);
+			clearTimeout(refreshInterval);
+			refreshInterval = null;
 
 			callback();
 		} catch (e) {
@@ -64,12 +108,114 @@ class SteamFriends extends utils.Adapter {
 		}
 	}
 
-	async main() {
-		const steamID = this.config.steamid;
-		const key = this.config.apikey;
-		this.log.info(`Steam-ID: ${steamID}`);
-		this.log.info(`Steam-ID: ${key}`);
+	async getFriends(connection) {
+		const url = `http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=${connection.apikey}&steamid=${connection.steamid}&relationship=friend`;
+		try {
+			// @ts-ignore
+			const response = await axios.get(url);
+			return response.data.friendslist.friends;
+		} catch (error) {
+			this.log.error(
+				'Could not load your friends list.'
+			);
+		}
 	}
+
+	async getFriendDetails(connection, friends) {
+		// Get data from API and combine
+		const ids = friends.map((ele) => ele.steamid).join(',');
+		const url = `http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${connection.apikey}&steamids=${ids}`;
+		try {
+			// @ts-ignore
+			const response = await axios.get(url);
+			const data = response.data.response.players;
+			friends = helper.mergeArrays(friends, data);
+		} catch (error) {
+			this.log.error(
+				'Could not load your friends data. Please try to restart the adapter'
+			);
+			return;
+		}
+
+		// Detailed personastate
+		const states = {
+			0: 'Offline',
+			1: 'Online',
+			2: 'Busy',
+			3: 'Away',
+			4: 'Snooze',
+			5: 'looking to trade',
+			6: 'looking to play',
+		};
+		friends.forEach((friend) => {
+			friend.personastate_text = states[friend.personastate];
+			// Convert unix timestamps to readable
+			if (friend.friend_since)
+				friend.friend_since_ts = helper.timeConverter(friend.friend_since);
+			if (friend.lastlogoff)
+				friend.lastlogoff_ts = helper.timeConverter(friend.lastlogoff);
+			if (friend.timecreated)
+				friend.timecreated_ts = helper.timeConverter(friend.timecreated);
+
+			friend = helper.orderObject(friend);
+		});
+
+		return friends;
+	}
+
+	async setData(steamID, friend){
+		const channelname = friend.steamid === steamID ? 'me' : friend.steamid;
+		this.log.info(`Channelname: ${channelname}`);
+		this.log.info(JSON.stringify(friend));
+	}
+
+	// async setData(steamID, friend) {
+	// 	// Create ioBroker objects
+	// 	const channelname = friend.steamid === steamID ? 'me' : friend.steamid;
+	// 	this.setObjectNotExists(channelname, {
+	// 		type: 'channel',
+	// 		common: {
+	// 			name: channelname,
+	// 			//TODO: icon: friend.avatarFull, download it with request and save with fs - https://stackoverflow.com/questions/12740659/downloading-images-with-node-js
+	// 		},
+	// 		native: {},
+	// 	});
+
+	// 	// Create ioBroker states
+	// 	Object.getOwnPropertyNames(friend).forEach((key) => {
+	// 		const path = `${channelname}.${key}`;
+	// 		let type = 'string';
+	// 		switch (typeof friend[key]) {
+	// 			case 'string':
+	// 				type = 'string';
+	// 				break;
+	// 			case 'number':
+	// 				type = 'number';
+	// 				break;
+	// 			case 'boolean':
+	// 				type = 'boolean';
+	// 				break;
+	// 			default:
+	// 				type = 'string';
+	// 				break;
+	// 		}
+
+	// 		this.setObjectNotExists(path, {
+	// 			type: 'state',
+	// 			common: {
+	// 				name: key,
+	// 				type: type,
+	// 				role: '',
+	// 				read: true,
+	// 				write: false,
+	// 				def: friend[key],
+	// 			},
+	// 			native: {},
+	// 		});
+
+	// 		this.setState(path, { val: friend[key], ack: true });
+	// 	});
+	// }
 }
 
 if (require.main !== module) {

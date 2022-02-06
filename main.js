@@ -40,9 +40,11 @@ class SteamFriends extends utils.Adapter {
 		// The adapters config (in the instance object everything under the attribute "native") is accessible via
 		// this.config:
 
+		// @ts-ignore
+		const interval = parseInt(this.config.refreshinterval);
 		refreshInterval = this.setInterval(
 			this.main,
-			this.config.refreshinterval * 1000
+			interval * 1000
 		);
 
 		this.setState('info.connection', true, true);
@@ -63,9 +65,10 @@ class SteamFriends extends utils.Adapter {
 	}
 
 	async main() {
-		this.log.info('Refresh interval: ' + this.config.refreshinterval);
-		this.log.info('Steam ID: ' + this.config.steamid);
-		this.log.info('API Key: ' + this.config.apikey);
+		const steamID = this.config.steamid;
+		const key = this.config.apikey;
+		this.log.info(`Steam-ID: ${steamID}`);
+		this.log.info(`Steam-ID: ${key}`);
 	}
 }
 

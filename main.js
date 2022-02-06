@@ -63,7 +63,7 @@ class SteamFriends extends utils.Adapter {
 			}
 
 			// Get steam friendlist
-			const friendList = await this.getFriends(connection);
+			const friendList = await this.getFriendsList(connection);
 			// Throw error if no friends are found
 			if (friendList.length === 0) {
 				this.log.error(
@@ -111,12 +111,16 @@ class SteamFriends extends utils.Adapter {
 		}
 	}
 
-	async getFriends(connection) {
+	async getFriendsList(connection) {
 		const url = `http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=${connection.apikey}&steamid=${connection.steamid}&relationship=friend`;
 		try {
 			// @ts-ignore
 			const response = await axios.get(url);
-			return response.data.friendslist.friends;
+			const friends = response.data.friendslist.friends;
+			friends.push({
+				steamid: connection.steamid
+			});
+			return friends;
 		} catch (error) {
 			this.log.error('Could not load your friends list.');
 		}

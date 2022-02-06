@@ -172,18 +172,19 @@ class SteamFriends extends utils.Adapter {
 
 	async setData(steamID, friend) {
 		// Create ioBroker objects
-		const channelname = friend.steamid === steamID ? 'me' : friend.steamid;
-		this.setObjectNotExistsAsync(channelname, {
+		const channelId = friend.steamid === steamID ? 'me' : friend.steamid;
+		const channelName = friend.personaname ? friend.personaname : friend.steamid;
+		this.setObjectNotExistsAsync(channelId, {
 			type: 'channel',
 			common: {
-				name: friend['personaname']
+				name: channelName
 			},
 			native: {}
 		});
 
 		// Create ioBroker states
 		Object.getOwnPropertyNames(friend).forEach((key) => {
-			const path = `${channelname}.${key}`;
+			const path = `${channelId}.${key}`;
 			let type = 'string';
 			switch (typeof friend[key]) {
 				case 'string':

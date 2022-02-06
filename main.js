@@ -33,7 +33,6 @@ class SteamFriends extends utils.Adapter {
 	 * Is called when databases are connected and adapter received configuration.
 	 */
 	async onReady() {
-
 		// Reset the connection indicator during startup
 		this.setState('info.connection', false, true);
 
@@ -42,7 +41,7 @@ class SteamFriends extends utils.Adapter {
 		const refreshIntervalInS = parseInt(this.config.refreshinterval) * 1000;
 		const connection = {
 			steamid: this.config.steamid,
-			apikey: this.config.apikey
+			apikey: this.config.apikey,
 		};
 
 		refreshInterval = setInterval(async () => {
@@ -75,12 +74,18 @@ class SteamFriends extends utils.Adapter {
 				refreshInterval = null;
 				return;
 			}
-			const friendListChunks = helper.splitArrayIntoChunks(friendList, 100);
+			const friendListChunks = helper.splitArrayIntoChunks(
+				friendList,
+				100
+			);
 
 			// Get more details of each friend
 			const friends = [];
 			for (let index = 0; index < friendListChunks.length; index++) {
-				const details = await this.getFriendDetails(connection, friendListChunks[index]);
+				const details = await this.getFriendDetails(
+					connection,
+					friendListChunks[index]
+				);
 				friends.push(...details);
 			}
 
@@ -88,9 +93,7 @@ class SteamFriends extends utils.Adapter {
 			for (let index = 0; index < friends.length; index++) {
 				this.setData(connection.steamid, friends[index]);
 			}
-
 		}, refreshIntervalInS);
-
 	}
 
 	/**
@@ -115,9 +118,7 @@ class SteamFriends extends utils.Adapter {
 			const response = await axios.get(url);
 			return response.data.friendslist.friends;
 		} catch (error) {
-			this.log.error(
-				'Could not load your friends list.'
-			);
+			this.log.error('Could not load your friends list.');
 		}
 	}
 
@@ -151,71 +152,71 @@ class SteamFriends extends utils.Adapter {
 			friend.personastate_text = states[friend.personastate];
 			// Convert unix timestamps to readable
 			if (friend.friend_since)
-				friend.friend_since_ts = helper.timeConverter(friend.friend_since);
+				friend.friend_since_ts = helper.timeConverter(
+					friend.friend_since
+				);
 			if (friend.lastlogoff)
 				friend.lastlogoff_ts = helper.timeConverter(friend.lastlogoff);
 			if (friend.timecreated)
-				friend.timecreated_ts = helper.timeConverter(friend.timecreated);
-
-			friend = helper.orderObject(friend);
+				friend.timecreated_ts = helper.timeConverter(
+					friend.timecreated
+				);
 		});
+
+		for (let index = 0; index < friends.length; index++) {
+			friends[index] = helper.orderObject(friends[index]);
+		}
 
 		return friends;
 	}
 
-	async setData(steamID, friend){
+	async setData(steamID, friend) {
+		// Create ioBroker objects
 		const channelname = friend.steamid === steamID ? 'me' : friend.steamid;
-		this.log.info(`Channelname: ${channelname}`);
-		this.log.info(JSON.stringify(friend));
+		this.setObjectNotExistsAsync(channelname, {
+			type: 'channel',
+			common: {
+				name: channelname
+			},
+			native: {}
+		});
+
+		// Create ioBroker states
+		Object.getOwnPropertyNames(friend).forEach((key) => {
+			const path = `${channelname}.${key}`;
+			let type = 'string';
+			switch (typeof friend[key]) {
+				case 'string':
+					type = 'string';
+					break;
+				case 'number':
+					type = 'number';
+					break;
+				case 'boolean':
+					type = 'boolean';
+					break;
+				default:
+					type = 'string';
+					break;
+			}
+
+			this.setObjectNotExistsAsync(path, {
+				type: 'state',
+				common: {
+					name: key,
+					type: type,
+					role: '',
+					// @ts-ignore
+					read: true,
+					write: false,
+					def: friend[key],
+				},
+				native: {},
+			});
+
+			this.setStateAsync(path, { val: friend[key], ack: true });
+		});
 	}
-
-	// async setData(steamID, friend) {
-	// 	// Create ioBroker objects
-	// 	const channelname = friend.steamid === steamID ? 'me' : friend.steamid;
-	// 	this.setObjectNotExists(channelname, {
-	// 		type: 'channel',
-	// 		common: {
-	// 			name: channelname,
-	// 			//TODO: icon: friend.avatarFull, download it with request and save with fs - https://stackoverflow.com/questions/12740659/downloading-images-with-node-js
-	// 		},
-	// 		native: {},
-	// 	});
-
-	// 	// Create ioBroker states
-	// 	Object.getOwnPropertyNames(friend).forEach((key) => {
-	// 		const path = `${channelname}.${key}`;
-	// 		let type = 'string';
-	// 		switch (typeof friend[key]) {
-	// 			case 'string':
-	// 				type = 'string';
-	// 				break;
-	// 			case 'number':
-	// 				type = 'number';
-	// 				break;
-	// 			case 'boolean':
-	// 				type = 'boolean';
-	// 				break;
-	// 			default:
-	// 				type = 'string';
-	// 				break;
-	// 		}
-
-	// 		this.setObjectNotExists(path, {
-	// 			type: 'state',
-	// 			common: {
-	// 				name: key,
-	// 				type: type,
-	// 				role: '',
-	// 				read: true,
-	// 				write: false,
-	// 				def: friend[key],
-	// 			},
-	// 			native: {},
-	// 		});
-
-	// 		this.setState(path, { val: friend[key], ack: true });
-	// 	});
-	// }
 }
 
 if (require.main !== module) {

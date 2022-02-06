@@ -63,9 +63,9 @@ class SteamFriends extends utils.Adapter {
 			}
 
 			// Get steam friendlist
-			const friendList = await this.getFriendsList(connection);
+			const friendsList = await this.getFriendsList(connection);
 			// Throw error if no friends are found
-			if (friendList.length === 0) {
+			if (friendsList.length === 0) {
 				this.log.error(
 					'No friends found. Please verify your Steam-ID and check if your friends list is public.'
 				);
@@ -74,17 +74,22 @@ class SteamFriends extends utils.Adapter {
 				refreshInterval = null;
 				return;
 			}
-			const friendListChunks = helper.splitArrayIntoChunks(
-				friendList,
+
+			// Add yourself to the list
+			friendsList.push({
+				steamid: connection.steamid
+			});
+			const friendsListChunks = helper.splitArrayIntoChunks(
+				friendsList,
 				100
 			);
 
 			// Get more details of each friend
 			const friends = [];
-			for (let index = 0; index < friendListChunks.length; index++) {
+			for (let index = 0; index < friendsListChunks.length; index++) {
 				const details = await this.getFriendDetails(
 					connection,
-					friendListChunks[index]
+					friendsListChunks[index]
 				);
 				friends.push(...details);
 			}
@@ -93,6 +98,9 @@ class SteamFriends extends utils.Adapter {
 			for (let index = 0; index < friends.length; index++) {
 				this.setData(connection.steamid, friends[index]);
 			}
+
+			// Delete all former friends
+			this.cleanUpFriends(friendsList);
 		}, refreshIntervalInS);
 	}
 
@@ -111,16 +119,45 @@ class SteamFriends extends utils.Adapter {
 		}
 	}
 
+	// @ts-ignore
+	cleanUpFriends(friendsList){
+		// Only get steam-ids from the friends list
+		friendsList = friendsList.map(ele => String(ele.steamid));
+
+		// Get and remove all channels from the objects
+		// @ts-ignore
+		this.getChannelsOf((err, res)=> {
+			// Gets all channels with at least 16 numbers => all friends
+			const channels = [];
+			// @ts-ignore
+			res = res.map(ele => ele['_id']);
+			// @ts-ignore
+			for (let index = 0; index < res.length; index++) {
+				// @ts-ignore
+				const element = res[index].match(/[0-9]{16,}/gi);
+				if (element && element.length !== 0) channels.push(String(element[0]));
+			}
+
+			// Gets difference between the channels and the current friends list
+			// @ts-ignore
+			const difference = friendsList
+				.filter(x => !channels.includes(x))
+				.concat(channels.filter(x => !friendsList.includes(x)));
+
+			// Remove old "friends" / channels
+			for (let index = 0; index < difference.length; index++) {
+				const id = difference[index];
+				this.delObject(id, {recursive: true});
+			}
+		});
+	}
+
 	async getFriendsList(connection) {
 		const url = `http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=${connection.apikey}&steamid=${connection.steamid}&relationship=friend`;
 		try {
 			// @ts-ignore
 			const response = await axios.get(url);
-			const friends = response.data.friendslist.friends;
-			friends.push({
-				steamid: connection.steamid
-			});
-			return friends;
+			return response.data.friendslist.friends;
 		} catch (error) {
 			this.log.error('Could not load your friends list.');
 		}

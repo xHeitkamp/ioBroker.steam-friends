@@ -178,7 +178,7 @@ class SteamFriends extends utils.Adapter {
 		// Create ioBroker objects
 		const channelId = friend.steamid === steamID ? 'me' : friend.steamid;
 		const channelName = friend.personaname ? friend.personaname : friend.steamid;
-		this.setObjectNotExistsAsync(channelId, {
+		await this.setObjectNotExistsAsync(channelId, {
 			type: 'channel',
 			common: {
 				name: channelName
@@ -205,7 +205,7 @@ class SteamFriends extends utils.Adapter {
 					break;
 			}
 
-			this.setObjectNotExistsAsync(path, {
+			this.setObjectNotExists(path, {
 				type: 'state',
 				common: {
 					name: key,
@@ -219,7 +219,7 @@ class SteamFriends extends utils.Adapter {
 				native: {},
 			});
 
-			this.setStateAsync(path, { val: friend[key], ack: true });
+			this.setState(path, { val: friend[key], ack: true });
 		});
 	}
 }

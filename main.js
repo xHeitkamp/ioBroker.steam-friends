@@ -13,7 +13,6 @@ const utils = require('@iobroker/adapter-core');
 
 //Global variables
 let refreshInterval;
-let refreshTimeout;
 
 class SteamFriends extends utils.Adapter {
 	/**
@@ -41,12 +40,7 @@ class SteamFriends extends utils.Adapter {
 		// The adapters config (in the instance object everything under the attribute "native") is accessible via
 		// this.config:
 
-		refreshInterval = setInterval(
-			this.main,
-			this.config.refreshinterval * 1000
-		);
-
-		refreshTimeout = setTimeout(
+		refreshInterval = this.setInterval(
 			this.main,
 			this.config.refreshinterval * 1000
 		);
@@ -61,7 +55,6 @@ class SteamFriends extends utils.Adapter {
 	onUnload(callback) {
 		try {
 			clearInterval(refreshInterval);
-			clearTimeout(refreshTimeout);
 
 			callback();
 		} catch (e) {

@@ -127,6 +127,11 @@ class SteamFriends extends utils.Adapter {
 		// Get and remove all channels from the objects
 		// @ts-ignore
 		this.getChannelsOf((err, res)=> {
+			if (err) {
+				this.log.error('Could not delete former friends');
+				return;
+			}
+
 			// Gets all channels with at least 16 numbers => all friends
 			const channels = [];
 			// @ts-ignore
@@ -174,7 +179,7 @@ class SteamFriends extends utils.Adapter {
 			friends = helper.mergeArrays(friends, data);
 		} catch (error) {
 			this.log.error(
-				'Could not load your friends data. Please try to restart the adapter'
+				'Could not load your friends data. Please try to restart the adapter!'
 			);
 			return;
 		}

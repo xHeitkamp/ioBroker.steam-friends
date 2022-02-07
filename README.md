@@ -35,7 +35,7 @@ To make your friends list public on Steam, go to the [Profile settings page](htt
 
 ## Changelog
 
-### Version 1.0.0
+### **WORK IN PROGRESS**
 
 -   (xHeitkamp) initial release of this adapter
 

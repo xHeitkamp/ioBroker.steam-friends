@@ -1,4 +1,5 @@
 ![Logo](admin/steam-friends.png)
+
 # ioBroker.steam-friends
 
 [![NPM version](https://img.shields.io/npm/v/iobroker.steam-friends.svg)](https://www.npmjs.com/package/iobroker.steam-friends)
@@ -15,27 +16,31 @@
 
 With this adapter you can check if your friends in Steam are online, offline or currently playing a game
 
-### Publishing the adapter
-Since you have chosen GitHub Actions as your CI service, you can 
-enable automatic releases on npm whenever you push a new git tag that matches the form 
-`v<major>.<minor>.<patch>`. The necessary steps are described in `.github/workflows/test-and-release.yml`.
+## Configuration
+To use this adapter, you need to follow 2 steps:
+1. Insert your Steam ID and API key in the corresponding fields in the adapter settings. This data will be used to retrieve the data from Steam.
+2. And your Steam friends list must be set to the "Public" setting, otherwise the data cannot be retrieved.
+3. (Optional) You can increase the refresh interval of the adapter, if you dont want to DDOS the Steam servers ;) But 5 seconds is perfectly fine!
 
-Since you installed the release script, you can create a new
-release simply by calling:
-```bash
-npm run release
-```
-Additional command line options for the release script are explained in the
-[release-script documentation](https://github.com/AlCalzone/release-script#command-line).
+### Get your Steam ID
+The easiest way to get your Steam ID is to use the page: [SteamIDFinder](https://www.steamidfinder.com/).
+With this page you can find out the Steam ID you need "steamID64 (Dec)" if you enter your Steam Username. Example: 76561197960287930
 
-To get your adapter released in ioBroker, please refer to the documentation 
-of [ioBroker.repositories](https://github.com/ioBroker/ioBroker.repositories#requirements-for-adapter-to-get-added-to-the-latest-repository).
+### Get your Steam API key
+To get your Steam API key you need to already spend more than $5 in the store. If you have done this you can change to the [Steam API key page](https://steamcommunity.com/dev/apikey). On this page you need to confirm the [Steam API Terms of Use](https://steamcommunity.com/dev/apiterms) and enter your Domain Name. Now click "Register" and you should see your key.
+Example: M947XROX89UBQ6AOJTOPYJUKAXX6QBTI
+
+### Set your friends list to public
+To make your friends list public on Steam, go to the [Profile settings page](https://steamcommunity.com/my/edit/settings) and change the "Friends List" to "Public".
 
 ## Changelog
-### **WORK IN PROGRESS**
-* (xHeitkamp) initial release
+
+### Version 1.0.0
+
+-   (xHeitkamp) initial release of this adapter
 
 ## License
+
 MIT License
 
 Copyright (c) 2022 Robin Behlke <developer@hk-studio.de>

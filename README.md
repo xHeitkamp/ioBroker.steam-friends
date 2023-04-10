@@ -7,10 +7,10 @@
 ![Number of Installations (latest)](https://iobroker.live/badges/steam-friends-installed.svg)
 ![Number of Installations (stable)](https://iobroker.live/badges/steam-friends-stable.svg)
 [![Dependency Status](https://img.shields.io/david/xHeitkamp/iobroker.steam-friends.svg)](https://david-dm.org/xHeitkamp/iobroker.steam-friends)
+![Vulnerabilities](https://snyk.io/test/github/{username}/{repo}/badge.svg)
+![Test and Release](https://github.com/xHeitkamp/ioBroker.steam-friends/workflows/Test%20and%20Release/badge.svg)
 
 [![NPM](https://nodei.co/npm/iobroker.steam-friends.png?downloads=true)](https://nodei.co/npm/iobroker.steam-friends/)
-
-**Tests:** ![Test and Release](https://github.com/xHeitkamp/ioBroker.steam-friends/workflows/Test%20and%20Release/badge.svg)
 
 ## steam-friends adapter for ioBroker
 

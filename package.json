@@ -1,6 +1,6 @@
 {
   "name": "iobroker.steam-friends",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "With this ioBroker Adapter you can see the status of your steam friends",
   "author": {
     "name": "Robin Behlke",

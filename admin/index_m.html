@@ -1,0 +1,198 @@
+<html>
+	<head>
+		<!-- Load ioBroker scripts and styles-->
+		<link rel="stylesheet" type="text/css" href="../../css/adapter.css" />
+		<link
+			rel="stylesheet"
+			type="text/css"
+			href="../../lib/css/materialize.css"
+		/>
+
+		<script
+			type="text/javascript"
+			src="../../lib/js/jquery-3.2.1.min.js"
+		></script>
+		<script
+			type="text/javascript"
+			src="../../socket.io/socket.io.js"
+		></script>
+
+		<script type="text/javascript" src="../../js/translate.js"></script>
+		<script
+			type="text/javascript"
+			src="../../lib/js/materialize.js"
+		></script>
+		<script
+			type="text/javascript"
+			src="../../js/adapter-settings.js"
+		></script>
+
+		<!-- Load our own files -->
+		<link rel="stylesheet" type="text/css" href="style.css" />
+		<script type="text/javascript" src="words.js"></script>
+
+		<script type="text/javascript">
+			function emitDevices() {
+				socket.emit(
+					'getObjectView',
+					'system',
+					'device',
+					{
+						startkey: 'steam-friends.' + instance + '.',
+						endkey: 'steam-friend.' + instance + '.\u9999',
+						include_docs: true,
+					},
+					function (err, _devices) {
+						socket.emit('getStates', function (err, _values) {
+							if (
+								_devices &&
+								_devices.rows &&
+								_devices.rows.length
+							) {
+								for (let j = 0; j < _devices.rows.length; j++) {
+									console.log('test');
+									devices[_devices.rows[j].value._id] =
+										_devices.rows[j].value;
+									//showDevice(_devices.rows[j].value, true);
+								}
+							}
+						});
+					}
+				);
+			}
+
+			// This will be called by the admin adapter when the settings page loads
+			function load(settings, onChange) {
+				// example: select elements with id=key and class=value and insert value
+				if (!settings) return;
+				$('.value').each(function () {
+					var $key = $(this);
+					var id = $key.attr('id');
+					if ($key.attr('type') === 'checkbox') {
+						// do not call onChange direct, because onChange could expect some arguments
+						$key.prop('checked', settings[id]).on('change', () =>
+							onChange()
+						);
+					} else {
+						// do not call onChange direct, because onChange could expect some arguments
+						$key.val(settings[id])
+							.on('change', () => onChange())
+							.on('keyup', () => onChange());
+					}
+				});
+				onChange(false);
+				// reinitialize all the Materialize labels on the page if you are dynamically adding inputs:
+				if (M) M.updateTextFields();
+			}
+
+			// This will be called by the admin adapter when the user presses the save button
+			function save(callback) {
+				// example: select elements with class=value and build settings object
+				var obj = {};
+				$('.value').each(function () {
+					var $this = $(this);
+					if ($this.attr('type') === 'checkbox') {
+						obj[$this.attr('id')] = $this.prop('checked');
+					} else if ($this.attr('type') === 'number') {
+						obj[$this.attr('id')] = parseFloat($this.val());
+					} else {
+						obj[$this.attr('id')] = $this.val();
+					}
+				});
+				callback(obj);
+			}
+
+			emitDevices();
+		</script>
+	</head>
+
+	<body>
+		<div class="m adapter-container">
+			<div class="row">
+				<div class="col s12 m4 l2">
+					<img src="steam-friends.png" class="logo" />
+				</div>
+			</div>
+
+			<!--Tabs-->
+			<div class="row">
+				<div class="col s12">
+					<ul class="tabs">
+						<li class="tab col s2">
+							<a href="#tab-main" class="translate">tab-main</a>
+						</li>
+						<li class="tab col s2">
+							<a href="#tab-visibility" class="translate"
+								>tab-visibility</a
+							>
+						</li>
+					</ul>
+				</div>
+			</div>
+
+			<!--Tab-Main-->
+			<div id="tab-main" class="col s12 page" style="padding-left: 10px">
+				<div class="row">
+					<div class="col s12">
+						<p class="translate title">title-general</p>
+						<div class="input-field col s12 m8 l3">
+							<input
+								class="value number"
+								id="refreshinterval"
+								size="17"
+								maxlength="17"
+								type="number"
+								min="10"
+							/>
+							<label
+								class="translate active"
+								for="refreshinterval"
+								>var-refresh</label
+							>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col s12">
+						<p class="translate title">title-steam</p>
+						<div class="input-field col s12 m8 l3">
+							<input
+								class="value text"
+								id="steamid"
+								size="17"
+								maxlength="17"
+								type="text"
+							/>
+							<label class="translate active" for="steamid"
+								>var-steamid</label
+							>
+						</div>
+						<div class="input-field col s12 m8 l3">
+							<input
+								class="value text"
+								id="apikey"
+								size="32"
+								maxlength="32"
+								type="text"
+							/>
+							<label class="translate active" for="apikey"
+								>var-apikey</label
+							>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!--Tab-Visibility-->
+			<div
+				id="tab-visibility"
+				class="col s12 page"
+				style="padding-left: 25px"
+			>
+				<div class="row">
+					<p class="translate active" id="placeholder">text-soon</p>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

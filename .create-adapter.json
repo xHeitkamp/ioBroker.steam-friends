@@ -1,0 +1,42 @@
+{
+	"cli": true,
+	"adapterName": "steam-friends",
+	"title": "Steam Friends",
+	"description": "With this ioBroker Adapter you can see the status of your steam friends",
+	"keywords": [
+		"steam",
+		"friends"
+	],
+	"expert": "yes",
+	"features": [
+		"adapter"
+	],
+	"adminFeatures": [],
+	"type": "misc-data",
+	"startMode": "daemon",
+	"connectionType": "cloud",
+	"dataSource": "poll",
+	"connectionIndicator": "yes",
+	"language": "JavaScript",
+	"adminReact": "no",
+	"tools": [
+		"ESLint",
+		"type checking",
+		"devcontainer"
+	],
+	"releaseScript": "yes",
+	"devServer": "yes",
+	"devServerPort": 8080,
+	"indentation": "Tab",
+	"quotes": "single",
+	"es6class": "yes",
+	"authorName": "Robin Behlke",
+	"authorGithub": "xHeitkamp",
+	"authorEmail": "iobroker@hk-studio.de",
+	"gitRemoteProtocol": "HTTPS",
+	"gitCommit": "no",
+	"license": "MIT License",
+	"ci": "gh-actions",
+	"dependabot": "yes",
+	"creatorVersion": "1.34.1"
+}

@@ -1,0 +1,115 @@
+{
+	"common": {
+		"name": "steam-friends",
+		"version": "0.0.1",
+		"news": {
+			"0.0.1": {
+				"en": "initial release",
+				"de": "Erstveröffentlichung",
+				"ru": "Начальная версия",
+				"pt": "lançamento inicial",
+				"nl": "Eerste uitgave",
+				"fr": "Première version",
+				"it": "Versione iniziale",
+				"es": "Versión inicial",
+				"pl": "Pierwsze wydanie",
+				"uk": "початковий реліз",
+				"zh-cn": "首次出版"
+			}
+		},
+		"title": {
+			"en": "Steam Friends",
+			"de": "Steam-Freunde",
+			"ru": "Паровые друзья",
+			"pt": "Amigos do Steam",
+			"nl": "Steam-vrienden",
+			"fr": "Amis de la vapeur",
+			"it": "Amici del vapore",
+			"es": "Amigos de vapor",
+			"pl": "Znajomi ze Steama",
+			"uk": "Друзі Steam",
+			"zh-cn": "蒸汽朋友"
+		},
+		"titleLang": {
+			"en": "Steam Friends",
+			"de": "Steam-Freunde",
+			"ru": "Паровые друзья",
+			"pt": "Amigos do Steam",
+			"nl": "Steam-vrienden",
+			"fr": "Amis de la vapeur",
+			"it": "Amici del vapore",
+			"es": "Amigos de vapor",
+			"pl": "Znajomi ze Steama",
+			"uk": "Друзі Steam",
+			"zh-cn": "蒸汽朋友"
+		},
+		"desc": {
+			"en": "With this ioBroker Adapter you can see the status of your steam friends",
+			"de": "Mit diesem ioBroker Adapter können Sie den Status Ihrer Steam-Freunde sehen",
+			"ru": "С помощью этого адаптера ioBroker вы можете видеть статус своих друзей в Steam.",
+			"pt": "Com este adaptador ioBroker você pode ver o status de seus amigos Steam",
+			"nl": "Met deze ioBroker Adapter kun je de status van je Steam-vrienden zien",
+			"fr": "Avec cet adaptateur ioBroker, vous pouvez voir le statut de vos amis Steam",
+			"it": "Con questo adattatore ioBroker puoi vedere lo stato dei tuoi amici di Steam",
+			"es": "Con este Adaptador ioBroker puedes ver el estado de tus amigos de Steam",
+			"pl": "Dzięki temu adapterowi ioBroker możesz zobaczyć status swoich znajomych ze Steam",
+			"uk": "За допомогою цього адаптера ioBroker ви можете бачити статус своїх друзів у Steam",
+			"zh-cn": "使用此 ioBroker 适配器，您可以查看您的 Steam 好友的状态"
+		},
+		"authors": [
+			"Robin Behlke <iobroker@hk-studio.de>"
+		],
+		"keywords": [
+			"steam",
+			"friends"
+		],
+		"license": "MIT",
+		"platform": "Javascript/Node.js",
+		"main": "main.js",
+		"icon": "steam-friends.png",
+		"enabled": false,
+		"extIcon": "https://raw.githubusercontent.com/xHeitkamp/ioBroker.steam-friends/master/admin/steam-friends.png",
+		"readme": "https://github.com/xHeitkamp/ioBroker.steam-friends/blob/master/README.md",
+		"loglevel": "info",
+		"mode": "daemon",
+		"type": "misc-data",
+		"compact": true,
+		"connectionType": "cloud",
+		"dataSource": "poll",
+		"materialize": true,
+		"dependencies": [
+			{
+				"js-controller": ">=2.0.0"
+			}
+		]
+	},
+	"native": {
+		"refreshinterval": 10,
+		"steamid": "",
+		"apikey": ""
+	},
+	"objects": [],
+	"instanceObjects": [
+		{
+			"_id": "info",
+			"type": "channel",
+			"common": {
+				"name": "Information"
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.connection",
+			"type": "state",
+			"common": {
+				"role": "indicator.connected",
+				"name": "Device or service connected",
+				"type": "boolean",
+				"read": true,
+				"write": false,
+				"def": false
+			},
+			"native": {}
+		}
+	]
+}
